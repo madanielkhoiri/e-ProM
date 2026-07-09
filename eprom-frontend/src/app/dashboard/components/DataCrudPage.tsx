@@ -58,6 +58,7 @@ type DataCrudPageProps = {
   customActions?: (row: Record<string, any>) => React.ReactNode;
   afterSave?: (data: any, form: Record<string, any>) => Promise<void>;
   disableEdit?: boolean;
+  refreshTrigger?: number;
 };
 
 export default function DataCrudPage({
@@ -73,6 +74,7 @@ export default function DataCrudPage({
   customActions,
   afterSave,
   disableEdit = false,
+  refreshTrigger = 0,
 }: DataCrudPageProps) {
   const [rows, setRows] = useState<Record<string, any>[]>([]);
   const [form, setForm] = useState<Record<string, any>>(defaultForm);
@@ -136,7 +138,7 @@ export default function DataCrudPage({
 
   useEffect(() => {
     fetchRows();
-  }, []);
+  }, [refreshTrigger]);
 
   function resetForm() {
     setForm(defaultForm);

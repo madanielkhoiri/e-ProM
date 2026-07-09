@@ -37,6 +37,8 @@ export default function PembuatanTenderPage() {
   const [vendorPage, setVendorPage] = useState(1);
   const VENDORS_PER_PAGE = 5;
 
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
   useEffect(() => {
     // Fetch Projects
     fetch('http://localhost:3000/projects', { cache: 'no-store' })
@@ -130,6 +132,7 @@ export default function PembuatanTenderPage() {
         title: 'Undangan berhasil dikirim.'
       });
       setInviteModalTender(null);
+      setRefreshTrigger(prev => prev + 1);
     } catch (err) {
       console.error(err);
       MySwal.fire({
@@ -220,18 +223,20 @@ export default function PembuatanTenderPage() {
           { name: 'nomor_wo', label: 'Nomor WO', required: true },
           { name: 'nama_pekerjaan', label: 'Nama Pekerjaan', required: true },
           { name: 'estimasi_harga', label: 'Estimasi Harga (Rp)', type: 'number', required: true },
-          { name: 'tanggal_mulai_tender', label: 'Tanggal Mulai', type: 'date' },
+          { name: 'tanggal_mulai_tender', label: 'Tanggal Mulai', type: 'date', required: true },
           {
             name: 'tanggal_batas_penawaran',
             label: 'Tanggal Batas Penawaran',
             type: 'date',
+            required: true,
           },
-          { name: 'deskripsi_pekerjaan', label: 'Deskripsi Pekerjaan', type: 'textarea', full: true },
+          { name: 'deskripsi_pekerjaan', label: 'Deskripsi Pekerjaan', type: 'textarea', full: true, required: true },
           {
             name: 'files',
             label: 'Upload Dokumen Pendukung',
             type: 'file',
             multiple: true,
+            required: true,
             full: true,
             excludeFromPayload: true
           }
@@ -242,6 +247,7 @@ export default function PembuatanTenderPage() {
           { key: 'estimasi_harga', label: 'Estimasi Harga', format: 'currency' },
           { key: 'status_tender', label: 'Status', badge: true },
         ]}
+        refreshTrigger={refreshTrigger}
       />
 
       {/* Detail Modal */}
