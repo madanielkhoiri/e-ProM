@@ -1,0 +1,307 @@
+﻿.crud-page {
+  width: 100%;
+}
+
+.crud-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.crud-header h1 {
+  font-size: 26px;
+  color: #0f172a;
+  margin-bottom: 6px;
+}
+
+.crud-header p {
+  color: #64748b;
+  font-size: 14px;
+}
+
+.crud-add-button {
+  border: 0;
+  border-radius: 14px;
+  padding: 12px 18px;
+  background: #4f46e5;
+  color: white;
+  font-weight: 800;
+  box-shadow: 0 12px 24px rgba(79, 70, 229, 0.25);
+}
+
+.crud-card {
+  background: white;
+  border-radius: 22px;
+  padding: 20px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+}
+
+.crud-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.crud-search {
+  width: 100%;
+  max-width: 360px;
+  height: 44px;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 0 14px;
+  outline: none;
+  font-weight: 600;
+}
+
+.crud-search:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
+}
+
+.crud-refresh-button {
+  border: 1px solid #e5e7eb;
+  background: #f8fafc;
+  border-radius: 14px;
+  height: 44px;
+  padding: 0 14px;
+  font-weight: 800;
+  color: #334155;
+}
+
+.crud-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.crud-table {
+  width: 100%;
+  min-width: 900px;
+  border-collapse: collapse;
+}
+
+.crud-table th {
+  text-align: left;
+  padding: 14px 12px;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #64748b;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f8fafc;
+}
+
+.crud-table td {
+  padding: 14px 12px;
+  font-size: 14px;
+  color: #334155;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: top;
+}
+
+.crud-table td strong {
+  color: #0f172a;
+}
+
+.crud-empty {
+  text-align: center;
+  padding: 28px;
+  color: #64748b;
+  font-weight: 700;
+}
+
+.crud-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.crud-action-edit,
+.crud-action-delete {
+  border: 0;
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.crud-action-edit {
+  background: #eef2ff;
+  color: #4338ca;
+}
+
+.crud-action-delete {
+  background: #fff1f2;
+  color: #e11d48;
+}
+
+.crud-badge {
+  display: inline-flex;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 800;
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.crud-badge.green {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.crud-badge.red {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.crud-badge.blue {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.crud-badge.yellow {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.crud-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+  padding: 18px;
+  border-radius: 18px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+}
+
+.crud-form-full {
+  grid-column: 1 / -1;
+}
+
+.crud-field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  color: #475569;
+  margin-bottom: 8px;
+}
+
+.crud-field input,
+.crud-field select,
+.crud-field textarea {
+  width: 100%;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 12px;
+  outline: none;
+  background: white;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.crud-field textarea {
+  min-height: 84px;
+  resize: vertical;
+}
+
+.crud-field input:focus,
+.crud-field select:focus,
+.crud-field textarea:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
+}
+
+.crud-form-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.crud-save-button,
+.crud-cancel-button {
+  border: 0;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-weight: 900;
+}
+
+.crud-save-button {
+  background: #4f46e5;
+  color: white;
+}
+
+.crud-cancel-button {
+  background: #e5e7eb;
+  color: #334155;
+}
+
+.crud-loading,
+.crud-error {
+  padding: 14px;
+  border-radius: 14px;
+  margin-bottom: 14px;
+  font-weight: 800;
+}
+
+.crud-loading {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.crud-error {
+  background: #fff1f2;
+  color: #e11d48;
+}
+
+@media (max-width: 768px) {
+  .crud-header {
+    display: block;
+  }
+
+  .crud-header h1 {
+    font-size: 22px;
+  }
+
+  .crud-add-button {
+    width: 100%;
+    margin-top: 14px;
+  }
+
+  .crud-card {
+    padding: 14px;
+    border-radius: 18px;
+  }
+
+  .crud-toolbar {
+    display: block;
+  }
+
+  .crud-search {
+    max-width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .crud-refresh-button {
+    width: 100%;
+  }
+
+  .crud-form {
+    grid-template-columns: 1fr;
+    padding: 14px;
+  }
+
+  .crud-form-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .crud-save-button,
+  .crud-cancel-button {
+    width: 100%;
+  }
+}
