@@ -1,10 +1,12 @@
-﻿import {
+import {
   Column,
   CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { TenderVendor } from '../tenders/tender-vendor.entity';
 
 @Entity('m_vendor')
 export class Vendor {
@@ -34,4 +36,7 @@ export class Vendor {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @OneToMany(() => TenderVendor, (tv) => tv.vendor)
+  tenderVendors: TenderVendor[];
 }
