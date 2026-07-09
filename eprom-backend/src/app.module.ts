@@ -1,13 +1,21 @@
-import { Module } from '@nestjs/common';
+﻿import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AuthModule } from './auth/auth.module';
 import { RolesModule } from './roles/roles.module';
 import { UsersModule } from './users/users.module';
+import { VendorsModule } from './vendors/vendors.module';
 
 import { Role } from './roles/role.entity';
 import { User } from './users/user.entity';
+import { Vendor } from './vendors/vendor.entity';
+import { Project } from './projects/project.entity';
+import { EvaluasiPenawaran } from './evaluasi-penawaran/evaluasi-penawaran.entity';
+import { Kontrak } from './kontrak/kontrak.entity';
+import { ProjectsModule } from './projects/projects.module';
+import { EvaluasiPenawaranModule } from './evaluasi-penawaran/evaluasi-penawaran.module';
+import { KontrakModule } from './kontrak/kontrak.module';
 
 @Module({
   imports: [
@@ -25,7 +33,7 @@ import { User } from './users/user.entity';
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_DATABASE'),
-        entities: [User, Role],
+        entities: [User, Role, Vendor, Project, EvaluasiPenawaran, Kontrak],
         synchronize: true,
       }),
     }),
@@ -33,6 +41,12 @@ import { User } from './users/user.entity';
     AuthModule,
     UsersModule,
     RolesModule,
+    VendorsModule,
+    ProjectsModule,
+    EvaluasiPenawaranModule,
+    KontrakModule,
   ],
 })
 export class AppModule {}
+
+
