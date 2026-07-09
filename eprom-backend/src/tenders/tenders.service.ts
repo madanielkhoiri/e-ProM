@@ -145,8 +145,7 @@ export class TendersService {
 
     // Update status tender if draft
     if (tender.status_tender === StatusTender.DRAFT) {
-      tender.status_tender = StatusTender.DIUNDANG;
-      await this.tenderRepository.save(tender);
+      await this.tenderRepository.update(tenderId, { status_tender: StatusTender.DIUNDANG });
     }
 
     return savedInvite;
@@ -207,9 +206,9 @@ export class TendersService {
     }
 
     // Update status tender jika sebelumnya DRAFT dan sekarang ada vendor
-    if (tender.status_tender === StatusTender.DRAFT && (existingInvites.length > vendorsToRemove.length || newInvites.length > 0)) {
-      tender.status_tender = StatusTender.DIUNDANG;
-      await this.tenderRepository.save(tender);
+    if (tender.status_tender === StatusTender.DRAFT && (existingInvites.length - vendorsToRemove.length + newInvites.length > 0)) {
+      console.log(`[DEBUG] Update status tender menjadi DIUNDANG...`);
+      await this.tenderRepository.update(tenderId, { status_tender: StatusTender.DIUNDANG });
     }
     
     return this.tenderVendorRepository.find({
