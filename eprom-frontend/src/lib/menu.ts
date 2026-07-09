@@ -47,8 +47,8 @@ export const sidebarMenus = [
             href: '/dashboard/pembuatan-tender',
           },
           {
-            label: 'Undangan Peserta Tender',
-            href: '#',
+            label: 'Undangan Tender',
+            href: '/dashboard/undangan-tender',
           },
           {
             label: 'Klarifikasi Tender',

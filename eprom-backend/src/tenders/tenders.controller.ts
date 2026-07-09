@@ -55,6 +55,12 @@ export class TendersController {
     return this.tendersService.findAll();
   }
 
+  @Get('vendor/:vendorId')
+  findByVendor(@Param('vendorId') vendorId: string) {
+    if (isNaN(+vendorId)) return [];
+    return this.tendersService.findByVendor(+vendorId);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.tendersService.findOne(+id);
@@ -63,6 +69,27 @@ export class TendersController {
   @Post(':id/invite/:vendorId')
   inviteVendor(@Param('id') id: string, @Param('vendorId') vendorId: string) {
     return this.tendersService.inviteVendor(+id, +vendorId);
+  }
+
+  @Post(':id/vendors/:vendorId/penawaran')
+  @UseInterceptors(
+    FilesInterceptor('files', 10, {
+      storage: diskStorage({
+        destination: './uploads/tenders/penawaran',
+        filename: (req, file, cb) => {
+          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          cb(null, `${uniqueSuffix}-${file.originalname}`);
+        },
+      }),
+    }),
+  )
+  submitPenawaran(
+    @Param('id') id: string,
+    @Param('vendorId') vendorId: string,
+    @UploadedFiles() files: Express.Multer.File[],
+    @Body() dto: import('./dto/submit-penawaran.dto').SubmitPenawaranDto,
+  ) {
+    return this.tendersService.submitPenawaran(+id, +vendorId, dto, files);
   }
 
   @Delete(':id')

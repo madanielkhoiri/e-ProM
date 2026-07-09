@@ -1,4 +1,4 @@
-﻿import {
+import {
   BadRequestException,
   Injectable,
   UnauthorizedException,
@@ -37,6 +37,8 @@ export class AuthService {
       user.password,
     );
 
+    console.log("DEBUG USER OBJECT:", user);
+
     if (!isPasswordValid) {
       throw new UnauthorizedException('Username/email atau password salah');
     }
@@ -53,6 +55,7 @@ export class AuthService {
         email: user.email,
         phone_number: user.phone_number,
         role: user.role?.name,
+        vendor_id: user.vendor_id,
       },
     };
   }
@@ -155,6 +158,7 @@ export class AuthService {
       email: user.email,
       phone_number: user.phone_number,
       role: user.role?.name,
+      vendor_id: user.vendor_id,
       is_two_factor_enabled: user.is_two_factor_enabled,
     };
   }

@@ -58,6 +58,8 @@ type DataCrudPageProps = {
   customActions?: (row: Record<string, any>) => React.ReactNode;
   afterSave?: (data: any, form: Record<string, any>) => Promise<void>;
   disableEdit?: boolean;
+  disableCreate?: boolean;
+  disableDelete?: boolean;
   refreshTrigger?: number;
 };
 
@@ -74,6 +76,8 @@ export default function DataCrudPage({
   customActions,
   afterSave,
   disableEdit = false,
+  disableCreate = false,
+  disableDelete = false,
   refreshTrigger = 0,
 }: DataCrudPageProps) {
   const [rows, setRows] = useState<Record<string, any>[]>([]);
@@ -339,16 +343,18 @@ export default function DataCrudPage({
           <p>{description}</p>
         </div>
 
-        <button
-          type="button"
-          className="crud-add-button"
-          onClick={() => {
-            resetForm();
-            setShowForm(true);
-          }}
-        >
-          + {addButtonText}
-        </button>
+        {!disableCreate && (
+          <button
+            type="button"
+            className="crud-add-button"
+            onClick={() => {
+              resetForm();
+              setShowForm(true);
+            }}
+          >
+            {addButtonText}
+          </button>
+        )}
       </div>
 
       <div className="crud-card">
@@ -521,13 +527,15 @@ export default function DataCrudPage({
                             Edit
                           </button>
                         )}
-                        <button
-                          type="button"
-                          className="crud-action-delete"
-                          onClick={() => handleDelete(row[idKey])}
-                        >
-                          Hapus
-                        </button>
+                        {!disableDelete && (
+                          <button
+                            type="button"
+                            className="crud-action-delete"
+                            onClick={() => handleDelete(row[idKey])}
+                          >
+                            Hapus
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
