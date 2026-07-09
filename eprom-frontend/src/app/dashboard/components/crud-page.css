@@ -1,4 +1,4 @@
-﻿.crud-page {
+.crud-page {
   width: 100%;
 }
 
@@ -119,12 +119,16 @@
 }
 
 .crud-action-edit,
-.crud-action-delete {
+.crud-action-delete,
+.crud-action-dokumen,
+.crud-action-detail,
+.crud-action-invite {
   border: 0;
   border-radius: 10px;
   padding: 8px 10px;
   font-weight: 800;
   font-size: 12px;
+  cursor: pointer;
 }
 
 .crud-action-edit {
@@ -304,4 +308,111 @@
   .crud-cancel-button {
     width: 100%;
   }
+}
+
+/* Custom Actions */
+.crud-action-dokumen {
+  background: #f0f9ff;
+  color: #0284c7;
+}
+.crud-action-dokumen:hover {
+  background: #e0f2fe;
+}
+
+.crud-action-detail {
+  background: #fdf4ff;
+  color: #c026d3;
+}
+.crud-action-detail:hover {
+  background: #fae8ff;
+}
+
+.crud-action-invite {
+  background: #fffbeb;
+  color: #d97706;
+}
+.crud-action-invite:hover {
+  background: #fef3c7;
+}
+
+/* Checkbox Group */
+.crud-checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 250px;
+  overflow-y: auto;
+  border: 1px solid #e2e8f0;
+  padding: 1rem;
+  border-radius: 6px;
+  background: #fff;
+}
+.crud-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+  color: #334155;
+  cursor: pointer;
+}
+.crud-checkbox-label input {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Modal UI */
+.crud-modal-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.crud-modal-content {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  animation: modal-pop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modal-pop {
+  0% { transform: scale(0.95); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.crud-modal-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.crud-modal-header h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.crud-modal-body {
+  padding: 1.5rem;
+}
+
+.crud-modal-footer {
+  padding: 1.25rem 1.5rem;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  background: #f8fafc;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
 }
