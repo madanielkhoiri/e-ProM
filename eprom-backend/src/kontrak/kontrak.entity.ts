@@ -17,26 +17,26 @@ export class Kontrak {
   @PrimaryGeneratedColumn()
   kontrak_id: number;
 
-  @Column({ nullable: true })
-  tender_id: number;
+  @Column({ type: 'int', nullable: true })
+  tender_id: number | null;
 
-  @Column({ nullable: true })
-  vendor_id: number;
+  @Column({ type: 'int', nullable: true })
+  vendor_id: number | null;
 
-  @Column({ unique: true })
+  @Column({ type: 'varchar', unique: true })
   nomor_kontrak: string;
 
   @Column({ type: 'decimal', precision: 15, scale: 2, default: 0 })
   nilai_kontrak: number;
 
   @Column({ type: 'date', nullable: true })
-  tanggal_kontrak: string;
+  tanggal_kontrak: string | null;
 
   @Column({ type: 'date', nullable: true })
-  tanggal_mulai: string;
+  tanggal_mulai: string | null;
 
   @Column({ type: 'date', nullable: true })
-  tanggal_selesai: string;
+  tanggal_selesai: string | null;
 
   @Column({
     type: 'enum',
@@ -45,11 +45,11 @@ export class Kontrak {
   })
   status_kontrak: StatusKontrak;
 
-  @Column({ nullable: true })
-  file_kontrak: string;
+  @Column({ type: 'varchar', nullable: true })
+  file_kontrak: string | null;
 
-  @Column({ nullable: true })
-  created_by: string;
+  @Column({ type: 'varchar', nullable: true })
+  created_by: string | null;
 
   @CreateDateColumn()
   created_at: Date;
