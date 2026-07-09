@@ -12,20 +12,16 @@ export default function KontrakPage() {
         addButtonText="Tambah Kontrak"
         emptyText="Data kontrak belum tersedia"
         defaultForm={{
-          tender_id: 1,
-          vendor_id: 1,
           nomor_kontrak: '',
           nilai_kontrak: 0,
           tanggal_kontrak: '',
           tanggal_mulai: '',
           tanggal_selesai: '',
           status_kontrak: 'draft',
-          file_kontrak: '',
+          file_kontrak: null,
           created_by: 'Owner',
         }}
         fields={[
-          { name: 'tender_id', label: 'Tender ID', type: 'number' },
-          { name: 'vendor_id', label: 'Vendor ID', type: 'number' },
           { name: 'nomor_kontrak', label: 'Nomor Kontrak', required: true },
           { name: 'nilai_kontrak', label: 'Nilai Kontrak', type: 'number' },
           { name: 'tanggal_kontrak', label: 'Tanggal Kontrak', type: 'date' },
@@ -42,21 +38,20 @@ export default function KontrakPage() {
               { label: 'Terminasi', value: 'terminasi' },
             ],
           },
-          { name: 'file_kontrak', label: 'File Kontrak' },
-          { name: 'created_by', label: 'Created By' },
+          { name: 'file_kontrak', label: 'Upload File Kontrak', type: 'file', full: true },
         ]}
         columns={[
           { key: 'nomor_kontrak', label: 'Nomor Kontrak' },
-          { key: 'tender_id', label: 'Tender ID' },
-          { key: 'vendor_id', label: 'Vendor ID' },
           { key: 'nilai_kontrak', label: 'Nilai Kontrak' },
           { key: 'tanggal_kontrak', label: 'Tanggal Kontrak' },
           { key: 'tanggal_mulai', label: 'Tanggal Mulai' },
           { key: 'tanggal_selesai', label: 'Tanggal Selesai' },
           { key: 'status_kontrak', label: 'Status', badge: true },
-          { key: 'file_kontrak', label: 'File' },
+          { key: 'file_kontrak', label: 'File Kontrak', file: true },
+          { key: 'created_by', label: 'Created By' },
         ]}
       />
     </DashboardLayout>
   );
 }
+

@@ -31,7 +31,6 @@ export default function ProjectsPage() {
               { label: 'Batal', value: 'batal' },
             ],
           },
-          { name: 'created_by', label: 'Created By' },
           { name: 'deskripsi', label: 'Deskripsi', type: 'textarea', full: true },
         ]}
         columns={[
@@ -45,3 +44,4 @@ export default function ProjectsPage() {
     </DashboardLayout>
   );
 }
+

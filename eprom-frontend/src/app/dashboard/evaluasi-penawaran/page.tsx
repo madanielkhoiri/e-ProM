@@ -12,8 +12,6 @@ export default function EvaluasiPenawaranPage() {
         addButtonText="Tambah Evaluasi"
         emptyText="Data evaluasi penawaran belum tersedia"
         defaultForm={{
-          project_id: 1,
-          vendor_id: 1,
           nama_project: '',
           nama_vendor: '',
           harga_penawaran: 0,
@@ -24,8 +22,6 @@ export default function EvaluasiPenawaranPage() {
           created_by: 'Owner',
         }}
         fields={[
-          { name: 'project_id', label: 'Project ID', type: 'number' },
-          { name: 'vendor_id', label: 'Vendor ID', type: 'number' },
           { name: 'nama_project', label: 'Nama Project' },
           { name: 'nama_vendor', label: 'Nama Vendor' },
           { name: 'harga_penawaran', label: 'Harga Penawaran', type: 'number' },
@@ -41,7 +37,6 @@ export default function EvaluasiPenawaranPage() {
               { label: 'Negosiasi', value: 'negosiasi' },
             ],
           },
-          { name: 'created_by', label: 'Created By' },
           { name: 'catatan', label: 'Catatan', type: 'textarea', full: true },
         ]}
         columns={[
@@ -58,3 +53,4 @@ export default function EvaluasiPenawaranPage() {
     </DashboardLayout>
   );
 }
+

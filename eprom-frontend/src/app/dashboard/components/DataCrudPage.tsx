@@ -12,7 +12,7 @@ type FieldOption = {
 type FieldConfig = {
   name: string;
   label: string;
-  type?: 'text' | 'number' | 'date' | 'email' | 'textarea' | 'select';
+  type?: 'text' | 'number' | 'date' | 'email' | 'textarea' | 'select' | 'file';
   required?: boolean;
   options?: FieldOption[];
   full?: boolean;
@@ -22,6 +22,7 @@ type ColumnConfig = {
   key: string;
   label: string;
   badge?: boolean;
+  file?: boolean;
 };
 
 type DataCrudPageProps = {
@@ -54,6 +55,28 @@ export default function DataCrudPage({
   const [editingId, setEditingId] = useState<number | string | null>(null);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+
+  function getLoginUserName() {
+    try {
+      const userText = localStorage.getItem('user');
+      if (!userText) return 'Owner';
+
+      const user = JSON.parse(userText);
+      return user?.name || user?.username || 'Owner';
+    } catch {
+      return 'Owner';
+    }
+  }
+
+  function getFinalForm() {
+    const finalForm = { ...form };
+
+    if ('created_by' in defaultForm) {
+      finalForm.created_by = finalForm.created_by || getLoginUserName();
+    }
+
+    return finalForm;
+  }
 
   async function fetchRows(keyword = '') {
     setLoading(true);
@@ -90,12 +113,48 @@ export default function DataCrudPage({
     const nextForm: Record<string, any> = {};
 
     fields.forEach((field) => {
-      nextForm[field.name] = row[field.name] ?? defaultForm[field.name] ?? '';
+      if (field.type === 'file') {
+        nextForm[field.name] = null;
+      } else {
+        nextForm[field.name] = row[field.name] ?? defaultForm[field.name] ?? '';
+      }
     });
+
+    if ('created_by' in defaultForm) {
+      nextForm.created_by = row.created_by ?? getLoginUserName();
+    }
 
     setForm(nextForm);
     setEditingId(row[idKey]);
     setShowForm(true);
+  }
+
+  function hasFileField(finalForm: Record<string, any>) {
+    return fields.some((field) => field.type === 'file' && finalForm[field.name]);
+  }
+
+  function buildRequestBody() {
+    const finalForm = getFinalForm();
+
+    if (!hasFileField(finalForm)) {
+      return {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(finalForm),
+      };
+    }
+
+    const formData = new FormData();
+
+    Object.entries(finalForm).forEach(([key, value]) => {
+      if (value === null || value === undefined || value === '') return;
+      formData.append(key, value);
+    });
+
+    return {
+      body: formData,
+    };
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -104,12 +163,11 @@ export default function DataCrudPage({
     setErrorMessage('');
 
     try {
+      const requestBody = buildRequestBody();
+
       const response = await fetch(editingId ? `${apiUrl}/${editingId}` : apiUrl, {
         method: editingId ? 'PATCH' : 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(form),
+        ...requestBody,
       });
 
       const data = await response.json();
@@ -164,6 +222,11 @@ export default function DataCrudPage({
     if (value === true) return 'Aktif';
     if (value === false) return 'Tidak Aktif';
     if (value === null || value === undefined || value === '') return '-';
+
+    if (column.file) {
+      const fileName = String(value).split('/').pop();
+      return <span title={String(value)}>{fileName || String(value)}</span>;
+    }
 
     return String(value);
   }
@@ -248,6 +311,17 @@ export default function DataCrudPage({
                       </option>
                     ))}
                   </select>
+                ) : field.type === 'file' ? (
+                  <input
+                    type="file"
+                    onChange={(event) =>
+                      setForm({
+                        ...form,
+                        [field.name]: event.target.files?.[0] || null,
+                      })
+                    }
+                    required={field.required && !editingId}
+                  />
                 ) : (
                   <input
                     type={field.type || 'text'}
