@@ -268,7 +268,9 @@ export default function PembuatanTenderPage() {
                   <div><div style={{ color: '#64748b', marginBottom: '0.25rem', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Project</div><div style={{ fontWeight: 500, color: '#334155' }}>{detailModalTender.project?.nama_project || '-'}</div></div>
                   <div><div style={{ color: '#64748b', marginBottom: '0.25rem', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Nomor WO</div><div style={{ fontWeight: 500, color: '#334155' }}>{detailModalTender.nomor_wo}</div></div>
                   <div><div style={{ color: '#64748b', marginBottom: '0.25rem', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Status Tender</div><div><span className="crud-badge blue" style={{ padding: '0.25rem 0.75rem' }}>{detailModalTender.status_tender}</span></div></div>
-                  <div><div style={{ color: '#64748b', marginBottom: '0.25rem', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Estimasi Harga</div><div style={{ fontWeight: 600, color: '#16a34a' }}>Rp {detailModalTender.estimasi_harga?.toLocaleString() || '0'}</div></div>
+                  {detailModalTender.estimasi_harga && (
+                    <div><div style={{ color: '#64748b', marginBottom: '0.25rem', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Estimasi Harga</div><div style={{ fontWeight: 600, color: '#059669' }}>{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(detailModalTender.estimasi_harga)}</div></div>
+                  )}
                   {detailModalTender.tanggal_mulai_tender && (
                     <div><div style={{ color: '#64748b', marginBottom: '0.25rem', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Tanggal Mulai</div><div style={{ fontWeight: 500, color: '#334155' }}>{new Date(detailModalTender.tanggal_mulai_tender).toLocaleDateString('id-ID')}</div></div>
                   )}

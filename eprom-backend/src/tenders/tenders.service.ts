@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Like } from 'typeorm';
 import { Tender, StatusTender } from './tender.entity';
 import { TenderVendor, StatusUndangan } from './tender-vendor.entity';
 import { TenderDokumen, JenisDokumen } from './tender-dokumen.entity';
@@ -59,9 +59,12 @@ export class TendersService {
     return this.tenderRepository.save(newTender);
   }
 
-  async findAll(): Promise<Tender[]> {
+  async findAll(search?: string): Promise<Tender[]> {
     return this.tenderRepository.find({
-      where: { is_deleted: false },
+      where: search ? [
+        { is_deleted: false, nama_pekerjaan: Like(`%${search}%`) },
+        { is_deleted: false, nomor_wo: Like(`%${search}%`) }
+      ] : { is_deleted: false },
       relations: {
         project: true,
         tenderVendors: { vendor: true },
@@ -70,9 +73,12 @@ export class TendersService {
     });
   }
 
-  async findByVendor(vendorId: number): Promise<Tender[]> {
+  async findByVendor(vendorId: number, search?: string): Promise<Tender[]> {
     return this.tenderRepository.find({
-      where: {
+      where: search ? [
+        { is_deleted: false, tenderVendors: { vendor: { vendor_id: vendorId } }, nama_pekerjaan: Like(`%${search}%`) },
+        { is_deleted: false, tenderVendors: { vendor: { vendor_id: vendorId } }, nomor_wo: Like(`%${search}%`) }
+      ] : {
         is_deleted: false,
         tenderVendors: {
           vendor: { vendor_id: vendorId }

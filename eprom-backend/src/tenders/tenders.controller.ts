@@ -8,6 +8,7 @@ import {
   Request,
   UseInterceptors,
   UploadedFiles,
+  Query,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { TendersService } from './tenders.service';
@@ -51,14 +52,14 @@ export class TendersController {
   }
 
   @Get()
-  findAll() {
-    return this.tendersService.findAll();
+  findAll(@Query('search') search?: string) {
+    return this.tendersService.findAll(search);
   }
 
   @Get('vendor/:vendorId')
-  findByVendor(@Param('vendorId') vendorId: string) {
+  findByVendor(@Param('vendorId') vendorId: string, @Query('search') search?: string) {
     if (isNaN(+vendorId)) return [];
-    return this.tendersService.findByVendor(+vendorId);
+    return this.tendersService.findByVendor(+vendorId, search);
   }
 
   @Get(':id')
