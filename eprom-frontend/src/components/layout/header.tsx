@@ -1,4 +1,8 @@
-import { Bell, HelpCircle, Mail, Menu } from 'lucide-react';
+'use client';
+
+import { useEffect, useState } from 'react';
+import { Bell, HelpCircle, Mail, Menu, LogOut } from 'lucide-react';
+import Swal from 'sweetalert2';
 import './header.css';
 
 export default function Header({
@@ -6,6 +10,48 @@ export default function Header({
 }: {
   onOpenSidebar: () => void;
 }) {
+  const [userData, setUserData] = useState<any>(null);
+
+  useEffect(() => {
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      try {
+        setUserData(JSON.parse(userStr));
+      } catch (e) {}
+    }
+  }, []);
+
+  const handleLogout = () => {
+    Swal.fire({
+      title: 'Keluar Aplikasi?',
+      text: "Anda harus login kembali untuk masuk.",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#94a3b8',
+      confirmButtonText: 'Ya, Keluar',
+      cancelButtonText: 'Batal'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+      }
+    });
+  };
+
+  const getRoleName = (roleId?: number) => {
+    switch (roleId) {
+      case 1: return 'Owner';
+      case 2: return 'Panitia';
+      case 3: return 'Vendor';
+      default: return 'User';
+    }
+  };
+
+  const name = userData?.name || userData?.username || 'Angga Dwi Cahyanto';
+  const roleName = userData ? getRoleName(userData.role_id) : 'Owner';
+
   return (
     <header className="dashboard-header">
       <div className="desktop-header-left">
@@ -15,9 +61,9 @@ export default function Header({
 
         <div>
           <p>
-            Selamat datang, <strong>Angga Dwi Cahyanto</strong>
+            Selamat datang, <strong>{name}</strong>
           </p>
-          <h1>Owner Dashboard</h1>
+          <h1>{roleName} Dashboard</h1>
         </div>
       </div>
 
@@ -41,8 +87,8 @@ export default function Header({
 
         <div className="mobile-welcome">
           <p>Selamat datang,</p>
-          <strong>Angga Dwi Cahyanto</strong>
-          <span>Owner</span>
+          <strong>{name}</strong>
+          <span>{roleName}</span>
         </div>
       </div>
 
@@ -61,12 +107,24 @@ export default function Header({
         </button>
 
         <div className="header-profile">
-          <div className="header-avatar">A</div>
+          <div className="header-avatar">{name.charAt(0).toUpperCase()}</div>
           <div>
-            <strong>Angga Dwi Cahyanto</strong>
-            <p>Owner</p>
+            <strong>{name}</strong>
+            <p>{roleName}</p>
           </div>
         </div>
+
+        <div style={{ width: '1px', height: '32px', background: '#e2e8f0', margin: '0 0.5rem' }}></div>
+
+        <button 
+          type="button" 
+          className="header-icon-button" 
+          onClick={handleLogout} 
+          style={{ color: '#ef4444' }}
+          title="Keluar (Logout)"
+        >
+          <LogOut size={21} />
+        </button>
       </div>
     </header>
   );

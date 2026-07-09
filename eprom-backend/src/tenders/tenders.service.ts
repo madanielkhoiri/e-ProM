@@ -70,6 +70,22 @@ export class TendersService {
     });
   }
 
+  async findByVendor(vendorId: number): Promise<Tender[]> {
+    return this.tenderRepository.find({
+      where: {
+        is_deleted: false,
+        tenderVendors: {
+          vendor: { vendor_id: vendorId }
+        }
+      },
+      relations: {
+        project: true,
+        tenderVendors: { vendor: true },
+        dokumens: true,
+      },
+    });
+  }
+
   async findOne(id: number): Promise<Tender> {
     const tender = await this.tenderRepository.findOne({
       where: { tender_id: id, is_deleted: false },
@@ -224,6 +240,65 @@ export class TendersService {
     }
 
     return this.tenderDokumenRepository.save(savedDokumens);
+  }
+
+  async submitPenawaran(
+    tenderId: number,
+    vendorId: number,
+    dto: import('./dto/submit-penawaran.dto').SubmitPenawaranDto,
+    files: Express.Multer.File[],
+  ): Promise<TenderVendor> {
+    const tender = await this.findOne(tenderId);
+    if (!tender) {
+      throw new NotFoundException(`Tender with ID ${tenderId} not found`);
+    }
+
+    const tenderVendor = await this.tenderVendorRepository.findOne({
+      where: {
+        tender: { tender_id: tenderId },
+        vendor: { vendor_id: vendorId },
+      },
+    });
+
+    if (!tenderVendor) {
+      throw new NotFoundException(
+        `Undangan tender untuk vendor ${vendorId} tidak ditemukan`,
+      );
+    }
+
+    // 1. Simpan Harga, Catatan & Update Status Undangan Vendor
+    tenderVendor.harga_penawaran = dto.harga_penawaran;
+    if (dto.catatan) {
+      tenderVendor.catatan = dto.catatan;
+    }
+    tenderVendor.tanggal_submit_penawaran = new Date();
+    tenderVendor.status_undangan = StatusUndangan.SUBMIT_PENAWARAN;
+    await this.tenderVendorRepository.save(tenderVendor);
+
+    // 2. Simpan Dokumen Penawaran
+    if (files && files.length > 0) {
+      const savedDokumens: TenderDokumen[] = [];
+      for (const file of files) {
+        const dokumen = this.tenderDokumenRepository.create({
+          tender,
+          tenderVendor,
+          jenis_dokumen: JenisDokumen.DOKUMEN_PENAWARAN,
+          nama_file: file.originalname,
+          path_file: file.path,
+          tipe_file: file.mimetype,
+          ukuran_file: file.size,
+          uploaded_by: dto.uploaded_by || `vendor-${vendorId}`,
+        });
+        savedDokumens.push(dokumen);
+      }
+      await this.tenderDokumenRepository.save(savedDokumens);
+    }
+
+    // 3. Update Status Tender Utama
+    tender.status_tender = StatusTender.PENAWARAN_MASUK;
+    await this.tenderRepository.save(tender);
+
+    return tenderVendor;
   }
 
   async remove(id: number): Promise<void> {

@@ -43,6 +43,9 @@ export class User {
   @ManyToOne(() => Role, (role) => role.users, { eager: true })
   role!: Role;
 
+  @Column({ nullable: true })
+  vendor_id!: number;
+
   @CreateDateColumn()
   created_at!: Date;
 

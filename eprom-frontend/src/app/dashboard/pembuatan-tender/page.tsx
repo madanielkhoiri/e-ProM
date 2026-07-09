@@ -256,7 +256,7 @@ export default function PembuatanTenderPage() {
           <div className="crud-modal-content" style={{ maxWidth: '800px', width: '90%' }}>
             <div className="crud-modal-header">
               <h2>Detail Tender - {detailModalTender.nama_pekerjaan}</h2>
-              <button onClick={() => setDetailModalTender(null)} style={{ fontSize: '1.5rem', lineHeight: 1 }}>&times;</button>
+              <button onClick={() => setDetailModalTender(null)} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#64748b', lineHeight: 1 }}>&times;</button>
             </div>
             <div className="crud-modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', padding: '1.5rem' }}>
               <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}>
