@@ -20,42 +20,42 @@ export class AuthService {
   ) {}
 
   async login(loginDto: LoginDto) {
-  const user = await this.usersService.findByUsernameOrEmail(
-    loginDto.usernameOrEmail,
-  );
+    const user = await this.usersService.findByUsernameOrEmail(
+      loginDto.usernameOrEmail,
+    );
 
-  if (!user) {
-    throw new UnauthorizedException('Username/email atau password salah');
+    if (!user) {
+      throw new UnauthorizedException('Username/email atau password salah');
+    }
+
+    if (user.is_active === false) {
+      throw new UnauthorizedException('Akun tidak aktif');
+    }
+
+    const isPasswordValid = await bcrypt.compare(
+      loginDto.password,
+      user.password,
+    );
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Username/email atau password salah');
+    }
+
+    const accessToken = await this.createAccessToken(user.id);
+
+    return {
+      message: 'Login berhasil',
+      accessToken,
+      user: {
+        id: user.id,
+        name: user.name,
+        username: user.username,
+        email: user.email,
+        phone_number: user.phone_number,
+        role: user.role?.name,
+      },
+    };
   }
-
-  if (user.is_active === false) {
-    throw new UnauthorizedException('Akun tidak aktif');
-  }
-
-  const isPasswordValid = await bcrypt.compare(
-    loginDto.password,
-    user.password,
-  );
-
-  if (!isPasswordValid) {
-    throw new UnauthorizedException('Username/email atau password salah');
-  }
-
-  const accessToken = await this.createAccessToken(user.id);
-
-  return {
-    message: 'Login berhasil',
-    accessToken,
-    user: {
-      id: user.id,
-      name: user.name,
-      username: user.username,
-      email: user.email,
-      phone_number: user.phone_number,
-      role: user.role?.name,
-    },
-  };
-}
 
   async generateTwoFactorQrCode(temporaryToken: string) {
     const payload = await this.verifyTemporaryToken(temporaryToken);
@@ -208,7 +208,9 @@ export class AuthService {
 
       return payload;
     } catch {
-      throw new UnauthorizedException('Temporary token tidak valid atau expired');
+      throw new UnauthorizedException(
+        'Temporary token tidak valid atau expired',
+      );
     }
   }
 
@@ -216,8 +218,7 @@ export class AuthService {
     const secret =
       this.configService.get<string>('JWT_SECRET') || 'eprom_secret_key';
 
-    const expiresIn =
-      this.configService.get<string>('JWT_EXPIRES_IN') || '1d';
+    const expiresIn = this.configService.get<string>('JWT_EXPIRES_IN') || '1d';
 
     return this.jwtService.signAsync(
       {

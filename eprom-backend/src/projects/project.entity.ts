@@ -1,10 +1,12 @@
-﻿import {
+import {
   Column,
   CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { Tender } from '../tenders/tender.entity';
 
 export enum ProjectStatus {
   AKTIF = 'aktif',
@@ -41,4 +43,7 @@ export class Project {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @OneToMany(() => Tender, (tender) => tender.project)
+  tenders: Tender[];
 }

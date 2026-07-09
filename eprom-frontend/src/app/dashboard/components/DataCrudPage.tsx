@@ -1,8 +1,25 @@
-﻿'use client';
+'use client';
 
 import type { FormEvent } from 'react';
 import { useEffect, useState } from 'react';
+import Select from 'react-select';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 import './crud-page.css';
+
+const MySwal = withReactContent(Swal);
+
+const Toast = MySwal.mixin({
+  toast: true,
+  position: 'top-end',
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true,
+  didOpen: (toast) => {
+    toast.addEventListener('mouseenter', Swal.stopTimer);
+    toast.addEventListener('mouseleave', Swal.resumeTimer);
+  }
+});
 
 type FieldOption = {
   label: string;
@@ -12,10 +29,12 @@ type FieldOption = {
 type FieldConfig = {
   name: string;
   label: string;
-  type?: 'text' | 'number' | 'date' | 'email' | 'textarea' | 'select' | 'file';
+  type?: 'text' | 'number' | 'date' | 'email' | 'textarea' | 'select' | 'file' | 'checkbox-group';
   required?: boolean;
   options?: FieldOption[];
   full?: boolean;
+  multiple?: boolean;
+  excludeFromPayload?: boolean;
 };
 
 type ColumnConfig = {
@@ -23,6 +42,7 @@ type ColumnConfig = {
   label: string;
   badge?: boolean;
   file?: boolean;
+  format?: 'currency';
 };
 
 type DataCrudPageProps = {
@@ -35,6 +55,9 @@ type DataCrudPageProps = {
   defaultForm: Record<string, any>;
   addButtonText: string;
   emptyText: string;
+  customActions?: (row: Record<string, any>) => React.ReactNode;
+  afterSave?: (data: any, form: Record<string, any>) => Promise<void>;
+  disableEdit?: boolean;
 };
 
 export default function DataCrudPage({
@@ -47,6 +70,9 @@ export default function DataCrudPage({
   defaultForm,
   addButtonText,
   emptyText,
+  customActions,
+  afterSave,
+  disableEdit = false,
 }: DataCrudPageProps) {
   const [rows, setRows] = useState<Record<string, any>[]>([]);
   const [form, setForm] = useState<Record<string, any>>(defaultForm);
@@ -75,6 +101,14 @@ export default function DataCrudPage({
       finalForm.created_by = finalForm.created_by || getLoginUserName();
     }
 
+    fields.forEach((field) => {
+      if (field.excludeFromPayload) {
+        delete finalForm[field.name];
+      } else if (finalForm[field.name] === '') {
+        finalForm[field.name] = null;
+      }
+    });
+
     return finalForm;
   }
 
@@ -84,7 +118,8 @@ export default function DataCrudPage({
 
     try {
       const url = keyword ? `${apiUrl}?search=${encodeURIComponent(keyword)}` : apiUrl;
-      const response = await fetch(url);
+      // Add cache: 'no-store' to prevent Next.js from aggressively caching the response
+      const response = await fetch(url, { cache: 'no-store' });
 
       if (!response.ok) {
         throw new Error('Gagal mengambil data');
@@ -149,7 +184,11 @@ export default function DataCrudPage({
 
     Object.entries(finalForm).forEach(([key, value]) => {
       if (value === null || value === undefined || value === '') return;
-      formData.append(key, value);
+      if (value instanceof FileList) {
+        Array.from(value).forEach((file) => formData.append(key, file));
+      } else {
+        formData.append(key, value);
+      }
     });
 
     return {
@@ -173,22 +212,49 @@ export default function DataCrudPage({
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Gagal menyimpan data');
+        let errorMsg = data.message || 'Gagal menyimpan data';
+        if (Array.isArray(data.message)) {
+          errorMsg = `<ul style="text-align: left; margin: 0; padding-left: 1.5rem;">${data.message.map((m: string) => `<li>${m}</li>`).join('')}</ul>`;
+        }
+        throw new Error(errorMsg);
+      }
+
+      if (afterSave) {
+        await afterSave(data, form);
+      } else {
+        Toast.fire({
+          icon: 'success',
+          title: 'Data berhasil disimpan.'
+        });
       }
 
       resetForm();
       fetchRows(search);
     } catch (error: any) {
       setErrorMessage(error.message || 'Terjadi kesalahan');
+      MySwal.fire({
+        icon: 'error',
+        title: 'Validasi Gagal',
+        html: error.message || 'Harap periksa kembali isian Anda.',
+      });
     } finally {
       setLoading(false);
     }
   }
 
   async function handleDelete(id: number | string) {
-    const confirmed = window.confirm('Yakin ingin menghapus data ini?');
+    const result = await MySwal.fire({
+      title: 'Yakin ingin menghapus data ini?',
+      text: "Data yang dihapus tidak bisa dikembalikan!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#e11d48',
+      cancelButtonColor: '#94a3b8',
+      confirmButtonText: 'Ya, hapus!',
+      cancelButtonText: 'Batal'
+    });
 
-    if (!confirmed) return;
+    if (!result.isConfirmed) return;
 
     setLoading(true);
     setErrorMessage('');
@@ -203,9 +269,19 @@ export default function DataCrudPage({
         throw new Error(data.message || 'Gagal menghapus data');
       }
 
-      fetchRows(search);
+      await fetchRows(search);
+      
+      Toast.fire({
+        icon: 'success',
+        title: 'Data berhasil dihapus.'
+      });
     } catch (error: any) {
       setErrorMessage(error.message || 'Terjadi kesalahan');
+      MySwal.fire({
+        icon: 'error',
+        title: 'Gagal!',
+        text: error.message || 'Terjadi kesalahan saat menghapus data.',
+      });
     } finally {
       setLoading(false);
     }
@@ -222,6 +298,10 @@ export default function DataCrudPage({
     if (value === true) return 'Aktif';
     if (value === false) return 'Tidak Aktif';
     if (value === null || value === undefined || value === '') return '-';
+
+    if (column.format === 'currency') {
+      return `Rp ${Number(value).toLocaleString('id-ID')}`;
+    }
 
     if (column.file) {
       const fileName = String(value).split('/').pop();
@@ -290,37 +370,64 @@ export default function DataCrudPage({
                     }
                     required={field.required}
                   />
-                ) : field.type === 'select' ? (
-                  <select
-                    value={String(form[field.name] ?? '')}
-                    onChange={(event) => {
-                      const selected = field.options?.find(
-                        (option) => String(option.value) === event.target.value,
-                      );
-
-                      setForm({
-                        ...form,
-                        [field.name]: selected ? selected.value : event.target.value,
-                      });
-                    }}
-                    required={field.required}
-                  >
-                    {field.options?.map((option) => (
-                      <option key={String(option.value)} value={String(option.value)}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
                 ) : field.type === 'file' ? (
                   <input
                     type="file"
+                    multiple={field.multiple}
                     onChange={(event) =>
                       setForm({
                         ...form,
-                        [field.name]: event.target.files?.[0] || null,
+                        [field.name]: field.multiple ? event.target.files : event.target.files?.[0],
                       })
                     }
                     required={field.required && !editingId}
+                  />
+                ) : field.type === 'checkbox-group' ? (
+                  <div className="crud-checkbox-group">
+                    {field.options?.map((opt) => (
+                      <label key={String(opt.value)} className="crud-checkbox-label">
+                        <input
+                          type="checkbox"
+                          value={String(opt.value)}
+                          checked={(form[field.name] || []).includes(opt.value)}
+                          onChange={(e) => {
+                            const curr = form[field.name] || [];
+                            if (e.target.checked) {
+                              setForm({ ...form, [field.name]: [...curr, opt.value] });
+                            } else {
+                              setForm({ ...form, [field.name]: curr.filter((v: any) => v !== opt.value) });
+                            }
+                          }}
+                        />
+                        {opt.label}
+                      </label>
+                    ))}
+                  </div>
+                ) : field.type === 'select' ? (
+                  <Select
+                    options={field.options}
+                    value={field.options?.find(opt => String(opt.value) === String(form[field.name] ?? '')) || null}
+                    onChange={(selected: any) => {
+                      setForm({
+                        ...form,
+                        [field.name]: selected ? selected.value : '',
+                      });
+                    }}
+                    placeholder={`-- Pilih ${field.label} --`}
+                    isClearable
+                    required={field.required && !form[field.name]}
+                    styles={{
+                      control: (base) => ({
+                        ...base,
+                        padding: '0.2rem',
+                        borderRadius: '8px',
+                        borderColor: '#cbd5e1',
+                        boxShadow: 'none',
+                        '&:hover': {
+                          borderColor: '#94a3b8'
+                        }
+                      })
+                    }}
                   />
                 ) : (
                   <input
@@ -402,13 +509,16 @@ export default function DataCrudPage({
 
                     <td>
                       <div className="crud-actions">
-                        <button
-                          type="button"
-                          className="crud-action-edit"
-                          onClick={() => handleEdit(row)}
-                        >
-                          Edit
-                        </button>
+                        {customActions && customActions(row)}
+                        {!disableEdit && (
+                          <button
+                            type="button"
+                            className="crud-action-edit"
+                            onClick={() => handleEdit(row)}
+                          >
+                            Edit
+                          </button>
+                        )}
                         <button
                           type="button"
                           className="crud-action-delete"

@@ -1,4 +1,4 @@
-﻿import {
+import {
   AlertTriangle,
   BarChart3,
   Bell,
@@ -43,8 +43,8 @@ export const sidebarMenus = [
         label: 'Tender',
         children: [
           {
-            label: 'Upload Dokumen Tender',
-            href: '#',
+            label: 'Pembuatan Tender',
+            href: '/dashboard/pembuatan-tender',
           },
           {
             label: 'Undangan Peserta Tender',
